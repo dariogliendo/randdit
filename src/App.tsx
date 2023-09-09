@@ -1,22 +1,60 @@
-import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
 import "./App.css";
 import Authenticate from "./components/Authenticate";
 
+interface localData {
+  code: string | null,
+  codeTs: number | null
+}
+
 function App() {
   const [redditCode, setRedditCode] = useState<string | null>(null)
-  const localCode = localStorage.getItem('redditCode')
-  const { code } = useParams()
-  if (code) {
-    setRedditCode(code)
-    localStorage.setItem('redditCode', code)
+
+  useEffect(() => {
+    const { code, codeTs } = getLocalData()
+
+    if (code) {
+      if (typeof codeTs === 'number' && (codeTs < codeTs + 60000)) setRedditCode(code)
+      else {
+        localStorage.clear()
+        tryAndStoreQueryString()
+      }
+    } else {
+      tryAndStoreQueryString()
+    }
+
+  }, [])
+
+  function tryAndStoreQueryString(): void {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString)
+    const paramsCode = urlParams.get('code')
+    if (paramsCode) {
+      localStorage.setItem('redditCode', paramsCode)
+      localStorage.setItem('codeTs', new Date().getTime().toString())
+      setRedditCode(paramsCode)
+    }
   }
-  else if (localCode) setRedditCode(localCode)
+
+  function getLocalData(): localData {
+    const code: string | null = localStorage.getItem('redditCode')
+    const codeTs: string | null = localStorage.getItem('codeTs')
+
+    const result: localData = { code, codeTs: null }
+    if (codeTs) result.codeTs = parseInt(codeTs)
+    return result
+  }
+
 
   return (
-    <>
-      {redditCode ? <h1>Hola</h1> : <Authenticate></Authenticate>}
-    </>
+    <div>
+      {
+        redditCode ?
+          <h1>Hola</h1>
+          :
+          <Authenticate></Authenticate>
+      }
+    </div>
   );
 }
 
