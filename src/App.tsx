@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 import Authenticate from "./components/Authenticate";
+import RandomPosts from "./components/RandomPosts";
+import axiosInstance from "./services/axios.service";
 
 interface localData {
   code: string | null,
@@ -25,14 +27,23 @@ function App() {
 
   }, [])
 
-  function tryAndStoreQueryString(): void {
+  async function tryAndStoreQueryString(): Promise<void> {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString)
     const paramsCode = urlParams.get('code')
     if (paramsCode) {
-      localStorage.setItem('redditCode', paramsCode)
+      const { data } = await axiosInstance({
+        method: 'post',
+        url: '/api/auth/access_token?code=' + paramsCode,
+        headers: {
+          "Content-Type": 'text/plain'
+        },
+        data: paramsCode
+      })
+      if (!data) throw new Error('Error trying to authenticate with Reddit')
+      setRedditCode(data.access_token)
+      localStorage.setItem('redditCode', data.access_token)
       localStorage.setItem('codeTs', new Date().getTime().toString())
-      setRedditCode(paramsCode)
     }
   }
 
@@ -50,7 +61,7 @@ function App() {
     <div>
       {
         redditCode ?
-          <h1>Hola</h1>
+          <RandomPosts redditCode={redditCode}></RandomPosts>
           :
           <Authenticate></Authenticate>
       }

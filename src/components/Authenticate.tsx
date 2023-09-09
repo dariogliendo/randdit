@@ -1,9 +1,9 @@
-import axios from 'axios'
+import axiosInstance from "../services/axios.service";
 
-const Authenticate = (props : any) => {
+const Authenticate = () => {
   async function authenticate(): Promise<void> {
     try {
-      const { data } = await axios.post(`http://localhost:8000/`);
+      const { data } = await axiosInstance.post(`/api/auth?statestring=alpargata`);
       window.location.replace(data)
     } catch (error) {
       alert(error);
