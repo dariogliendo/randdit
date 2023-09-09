@@ -1,0 +1,21 @@
+import axios from 'axios'
+
+const Authenticate = (props : any) => {
+  async function authenticate(): Promise<void> {
+    try {
+      const { data } = await axios.post(`http://localhost:8000/`);
+      window.location.replace(data)
+    } catch (error) {
+      alert(error);
+    }
+  }
+
+  return (
+    <>
+      <h1>Randdit</h1>
+      <button onClick={authenticate}>Authenticate</button>
+    </>
+  )
+}
+
+export default Authenticate
