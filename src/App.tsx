@@ -1,21 +1,21 @@
+import { useState } from "react";
+import { useParams } from "react-router-dom";
 import "./App.css";
-import axios from "axios";
-
-async function authenticate(): Promise<void> {
-  try {
-    const { data } = await axios.post(`http://localhost:8000/`);
-    console.log(data)
-    
-  } catch (error) {
-    alert(error);
-  }
-}
+import Authenticate from "./components/Authenticate";
 
 function App() {
+  const [redditCode, setRedditCode] = useState<string | null>(null)
+  const localCode = localStorage.getItem('redditCode')
+  const { code } = useParams()
+  if (code) {
+    setRedditCode(code)
+    localStorage.setItem('redditCode', code)
+  }
+  else if (localCode) setRedditCode(localCode)
+
   return (
     <>
-      <h1>Randdit</h1>
-      <button onClick={authenticate}>Authenticate</button>
+      {redditCode ? <h1>Hola</h1> : <Authenticate></Authenticate>}
     </>
   );
 }
