@@ -23,10 +23,10 @@ app.use((error : RequestError, req : Request, res: Response, next: NextFunction)
   console.error("Call to ERROR middleware")
   console.error('')
   console.error("Path: ", req.path)
-  console.error("Error: ", error)
+  console.error("Error: ", error.stack)
 
   if (error.type == 'time-out') res.status(408).send(error)
-  else res.status(500).send(error)
+  else res.status(500).send(error.message)
   next()
 })
 

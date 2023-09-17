@@ -8,9 +8,10 @@ const randomPosts = (props: {redditCode: string}) => {
   
   async function getPosts() {
     try {
-      const {data} = await axiosInstance.get('/api/posts', {
+      const {data} = await axiosInstance.get('/api/posts?subreddit=argentina', {
         headers: {
-          'Authorization': `bearer ${props.redditCode}`
+          'Authorization': `bearer ${props.redditCode}`,
+          'User-Agent': 'Randdit App V.01'
         }
       })
       console.log(data)

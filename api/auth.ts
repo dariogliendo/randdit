@@ -30,7 +30,8 @@ const getAccessToken : RequestHandler<Params, ResBody, ReqBody, ReqQuery> = asyn
       data: new URLSearchParams({
         "grant_type": "authorization_code",
         "code": req.query.code,
-        "redirect_uri": process.env.REDDIT_REDIRECT as any
+        "redirect_uri": process.env.REDDIT_REDIRECT as string,
+        "duration": "permanent"
       }),
       headers: {
         'Authorization': `Basic ${strToBase64(process.env.REDDIT_APP_ID + ':' + process.env.REDDIT_APP_SECRET)}`,
